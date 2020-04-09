@@ -11,13 +11,10 @@ import java.io.IOException
 import java.io.InputStream
 import java.nio.charset.Charset
 
-class DataExampleParser(private val context: Context) {
+class DataExampleParser {
 
-    private lateinit var adapterMoshi: JsonAdapter<List<DataExample>>
-    private lateinit var gson: Gson
-
-    private var jsonFileStrSmall = ""
-    private var jsonFileStrLarge = ""
+    private var adapterMoshi: JsonAdapter<List<DataExample>>? = null
+    private var gson: Gson? = null
 
     init {
         val moshi = Moshi.Builder().build()
@@ -26,40 +23,14 @@ class DataExampleParser(private val context: Context) {
         gson = Gson()
     }
 
-    fun loadSmallJson() = apply {
-        jsonFileStrSmall = loadJSONFromAsset("generated_1_000.json") ?: ""
-    }
+    fun parseGson(json: String) = gson?.fromJson<List<DataExample>>(json, List::class.java)
 
-    fun loadLargeJson() = apply {
-        jsonFileStrLarge = loadJSONFromAsset("generated_100_000.json") ?: ""
-    }
+    fun parseKotlin(json: String) = Json.parse(DataExample.serializer().list, json)
 
-    // parse Json by Moshi
-    fun parseMoshi() = apply {
-        if (jsonFileStrSmall.isNotBlank())
-            adapterMoshi.fromJson(jsonFileStrSmall) ?: emptyList()
-        else
-            adapterMoshi.fromJson(jsonFileStrLarge) ?: emptyList()
-    }
+    fun parseMoshi(json: String) = adapterMoshi?.fromJson(json)
 
-    // parse Json by Gson
-    fun parseGson() = apply {
-        if (jsonFileStrSmall.isNotBlank())
-            gson.fromJson<List<DataExample>>(jsonFileStrSmall, List::class.java)
-        else
-            gson.fromJson<List<DataExample>>(jsonFileStrLarge, List::class.java)
-    }
-
-    fun parseKotlin() = apply {
-        if (jsonFileStrSmall.isNotBlank())
-            Json.parse(DataExample.serializer().list, jsonFileStrSmall)
-        else
-            Json.parse(DataExample.serializer().list, jsonFileStrLarge)
-    }
-
-    // Get Json from assets
-    private fun loadJSONFromAsset(name: String): String? {
-        var json: String
+    fun loadJSONFromAsset(name: String, context: Context): String? {
+        val json: String
         json = try {
             val `is`: InputStream = context.assets.open(name)
             val size: Int = `is`.available()
@@ -74,3 +45,4 @@ class DataExampleParser(private val context: Context) {
         return json
     }
 }
+

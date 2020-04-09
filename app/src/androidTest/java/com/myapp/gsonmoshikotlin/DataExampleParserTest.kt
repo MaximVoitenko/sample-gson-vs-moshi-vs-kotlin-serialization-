@@ -1,75 +1,69 @@
 package com.myapp.gsonmoshikotlin
 
-import android.os.Debug
-import android.util.Log
-import androidx.test.ext.junit.runners.AndroidJUnit4
+import android.content.Context
 import androidx.test.platform.app.InstrumentationRegistry
-import com.myapp.gsonmoshikotlin.DataExampleParser
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.newSingleThreadContext
-import kotlinx.coroutines.runBlocking
-import org.junit.Before
 import org.junit.Test
-import org.junit.runner.RunWith
+import java.io.IOException
+import java.io.InputStream
+import java.nio.charset.Charset
 
-@RunWith(AndroidJUnit4::class)
-class DataExampleParserTestAndroid {
+class DataExampleParserTest{
 
+    private var dataExampleParser = DataExampleParser()
     private val app = InstrumentationRegistry.getInstrumentation().targetContext
-    lateinit var dataExampleParser: DataExampleParser
 
-    @Before
-    fun setup() {
-        dataExampleParser = DataExampleParser(context = app)
-    }
+    private val shortJson = loadJSONFromAsset("generated_1_000.json", app)
+    private val longJson = loadJSONFromAsset("generated_100_000.json", app)
 
     @Test
     fun load_small_json_via_gson() {
-        dataExampleParser.loadSmallJson()
-        Debug.startMethodTracing("load_small_json_via_gson")
-        dataExampleParser.parseGson()
-        Debug.stopMethodTracing()
+        val result = dataExampleParser.parseGson(shortJson!!)
+        assert(!result.isNullOrEmpty())
     }
 
     @Test
     fun load_large_json_via_gson() {
-        dataExampleParser.loadLargeJson()
-        Debug.startMethodTracing("load_large_json_via_gson")
-        dataExampleParser.parseGson()
-        Debug.stopMethodTracing()
+        val result = dataExampleParser.parseGson(longJson!!)
+        assert(!result.isNullOrEmpty())
     }
 
     @Test
     fun load_small_json_via_moshi() {
-        dataExampleParser.loadSmallJson()
-        Debug.startMethodTracing("load_small_json_via_moshi")
-        dataExampleParser.parseMoshi()
-        Debug.stopMethodTracing()
+        val result = dataExampleParser.parseMoshi(shortJson!!)
+        assert(!result.isNullOrEmpty())
     }
 
     @Test
     fun load_large_json_via_moshi() {
-        dataExampleParser.loadLargeJson()
-        Debug.startMethodTracing("load_large_json_via_moshi")
-        dataExampleParser.parseMoshi()
-        Debug.stopMethodTracing()
+        val result = dataExampleParser.parseMoshi(longJson!!)
+        assert(!result.isNullOrEmpty())
     }
 
     @Test
     fun load_small_json_via_kotlin_serialization() {
-        dataExampleParser.loadSmallJson()
-        Debug.startMethodTracing("load_small_json_via_kotlin_serialization")
-        dataExampleParser.parseKotlin()
-        Debug.stopMethodTracing()
+        val result = dataExampleParser.parseKotlin(shortJson!!)
+        assert(!result.isNullOrEmpty())
     }
 
     @Test
     fun load_large_json_via_kotlin_serialization() {
-        dataExampleParser.loadLargeJson()
-        Debug.startMethodTracing("load_large_json_via_kotlin_serialization")
-        dataExampleParser.parseKotlin()
-        Debug.stopMethodTracing()
+        val result = dataExampleParser.parseGson(longJson!!)
+        assert(!result.isNullOrEmpty())
     }
 
+    private fun loadJSONFromAsset(name: String, context: Context): String? {
+        val json: String
+        json = try {
+            val `is`: InputStream = context.assets.open(name)
+            val size: Int = `is`.available()
+            val buffer = ByteArray(size)
+            `is`.read(buffer)
+            `is`.close()
+            String(buffer, Charset.forName("UTF-8"))
+        } catch (ex: IOException) {
+            ex.printStackTrace()
+            return null
+        }
+        return json
+    }
 }

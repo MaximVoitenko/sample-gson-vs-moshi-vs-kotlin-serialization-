@@ -17,13 +17,23 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        val parser = DataExampleParser()
+        var smallJson = ""
+        var largelJson = ""
+
+        lifecycleScope.launch(Dispatchers.Default) {
+            withContext(Dispatchers.Main) { progress.visibility = View.VISIBLE }
+            smallJson = parser.loadJSONFromAsset("generated_1_000.json", this@MainActivity) ?: ""
+            largelJson = parser.loadJSONFromAsset("generated_100_000.json", this@MainActivity) ?: ""
+            withContext(Dispatchers.Main) { progress.visibility = View.GONE }
+        }
+
 
         gsonSmallBtn.setOnClickListener {
             lifecycleScope.launch(Dispatchers.Default) {
                 withContext(Dispatchers.Main) { progress.visibility = View.VISIBLE }
-                val parser = DataExampleParser(this@MainActivity).loadSmallJson()
                 val start = System.currentTimeMillis() // save start time of parse
-                parser.parseGson()
+                parser.parseGson(smallJson)
                 val end = System.currentTimeMillis() // save end time of parse
                 Log.d(TAG, "gson small file duration = ${end - start}")
                 withContext(Dispatchers.Main) {
@@ -35,9 +45,8 @@ class MainActivity : AppCompatActivity() {
         gsonLargeBtn.setOnClickListener {
             lifecycleScope.launch(Dispatchers.Default) {
                 withContext(Dispatchers.Main) { progress.visibility = View.VISIBLE }
-                val parser = DataExampleParser(this@MainActivity).loadLargeJson()
                 val start = System.currentTimeMillis() // save start time of parse
-                parser.parseGson()
+                parser.parseGson(largelJson)
                 val end = System.currentTimeMillis() // save end time of parse
                 Log.d(TAG, "gson large file duration = ${end - start}")
                 withContext(Dispatchers.Main) {
@@ -49,9 +58,8 @@ class MainActivity : AppCompatActivity() {
         moshiSmallBtn.setOnClickListener {
             lifecycleScope.launch(Dispatchers.Default) {
                 withContext(Dispatchers.Main) { progress.visibility = View.VISIBLE }
-                val parser = DataExampleParser(this@MainActivity).loadSmallJson()
                 val start = System.currentTimeMillis() // save start time of parse
-                parser.parseMoshi()
+                parser.parseMoshi(smallJson)
                 val end = System.currentTimeMillis() // save end time of parse
                 Log.d(TAG, "moshi small duration = ${end - start}")
                 withContext(Dispatchers.Main) {
@@ -63,9 +71,8 @@ class MainActivity : AppCompatActivity() {
         moshiLargeBtn.setOnClickListener {
             lifecycleScope.launch(Dispatchers.Default) {
                 withContext(Dispatchers.Main) { progress.visibility = View.VISIBLE }
-                val parser = DataExampleParser(this@MainActivity).loadLargeJson()
                 val start = System.currentTimeMillis() // save start time of parse
-                parser.parseMoshi()
+                parser.parseMoshi(largelJson)
                 val end = System.currentTimeMillis() // save end time of parse
                 Log.d(TAG, "moshi large file duration = ${end - start}")
                 withContext(Dispatchers.Main) {
@@ -77,9 +84,8 @@ class MainActivity : AppCompatActivity() {
         ktxSmallBtn.setOnClickListener {
             lifecycleScope.launch(Dispatchers.Default) {
                 withContext(Dispatchers.Main) { progress.visibility = View.VISIBLE }
-                val parser = DataExampleParser(this@MainActivity).loadSmallJson()
                 val start = System.currentTimeMillis() // save start time of parse
-                parser.parseKotlin()
+                parser.parseKotlin(smallJson)
                 val end = System.currentTimeMillis() // save end time of parse
                 Log.d(TAG, "kts.serialization small file duration = ${end - start}")
                 withContext(Dispatchers.Main) {
@@ -91,9 +97,8 @@ class MainActivity : AppCompatActivity() {
         ktxLargeBtn.setOnClickListener {
             lifecycleScope.launch(Dispatchers.Default) {
                 withContext(Dispatchers.Main) { progress.visibility = View.VISIBLE }
-                val parser = DataExampleParser(this@MainActivity).loadLargeJson()
                 val start = System.currentTimeMillis() // save start time of parse
-                parser.parseKotlin()
+                parser.parseKotlin(largelJson)
                 val end = System.currentTimeMillis() // save end time of parse
                 Log.d(TAG, "kts.serialization large file duration = ${end - start}")
                 withContext(Dispatchers.Main) {
