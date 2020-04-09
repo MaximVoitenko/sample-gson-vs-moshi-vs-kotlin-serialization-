@@ -1,0 +1,2 @@
+rootProject.name='gsonMoshiKotlin'
+include ':app'
