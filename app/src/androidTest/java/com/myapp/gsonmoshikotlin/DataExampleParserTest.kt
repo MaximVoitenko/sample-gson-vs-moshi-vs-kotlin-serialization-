@@ -12,8 +12,8 @@ class DataExampleParserTest{
     private var dataExampleParser = DataExampleParser()
     private val app = InstrumentationRegistry.getInstrumentation().targetContext
 
-    private val shortJson = loadJSONFromAsset("generated_1_000.json", app)
-    private val longJson = loadJSONFromAsset("generated_100_000.json", app)
+    private val shortJson = loadJSONFromAsset("generated_small.json", app)
+    private val longJson = loadJSONFromAsset("generated_large.json", app)
 
     @Test
     fun load_small_json_via_gson() {

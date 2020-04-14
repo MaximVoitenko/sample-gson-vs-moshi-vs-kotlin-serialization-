@@ -23,8 +23,8 @@ class MainActivity : AppCompatActivity() {
 
         lifecycleScope.launch(Dispatchers.Default) {
             withContext(Dispatchers.Main) { progress.visibility = View.VISIBLE }
-            smallJson = parser.loadJSONFromAsset("generated_1_000.json", this@MainActivity) ?: ""
-            largelJson = parser.loadJSONFromAsset("generated_100_000.json", this@MainActivity) ?: ""
+            smallJson = parser.loadJSONFromAsset("generated_small.json", this@MainActivity) ?: ""
+            largelJson = parser.loadJSONFromAsset("generated_large.json", this@MainActivity) ?: ""
             withContext(Dispatchers.Main) { progress.visibility = View.GONE }
         }
 
